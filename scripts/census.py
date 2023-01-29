@@ -63,7 +63,8 @@ nj_data = censusdata.download(
 nj_data = nj_data.clip(lower=0).reset_index().rename({"index":"tract_name"}, axis=1)
 
 # %%
-nj_data["tract_name"] = [x.params()[2][1] for x in nj_data["tract_name"].values]
+nj_data["tract"] = [x.params()[2][1] for x in nj_data["tract_name"].values]
+nj_data["county"] = [x.params()[1][1] for x in nj_data["tract_name"].values]
 
 # %%
 nj_data.to_csv(f"../../data/censustracts.csv", index=False)
