@@ -25,12 +25,12 @@ for col in ["pork_pork_roll","pork_taylor_ham"]:
 
 # %%
 cols = [
-    # "wawa",
-    # "dunkin",
-    # "nfl_giants_jets",
-    # "nfl_eagles",
-    # "pork_pork_roll",
-    # "pork_taylor_ham",
+    "wawa",
+    "dunkin",
+    "nfl_giants_jets",
+    "nfl_eagles",
+    "pork_pork_roll",
+    "pork_taylor_ham",
     "pob_native_jeresy",
     "pob_foreign_born",
     "edu_college"
@@ -40,7 +40,7 @@ for col in cols:
     figure = folium.Figure()
     m = folium.Map(
         location=[40.133851, -74.871826],
-        zoom_start=7,
+        zoom_start=8,
         tiles='cartodbpositron'
     )
     m.add_to(figure)
@@ -58,7 +58,7 @@ for col in cols:
     smooth_factor=0
     )
 
-    m.save(f"../../data/maps.nosync/{col}.html")
+    m.save(f"../jerseyproj/templates/maps/{col}.html")
 
 # %%
 df
