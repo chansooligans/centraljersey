@@ -9,14 +9,12 @@ import geopandas as gpd
 import pandas as pd
 import requests
 import tqdm
-import yaml
 
 from centraljersey import cache
 
 
 @dataclass
 class CensusCentroids:
-
     # Load the census tract data for New Jersey
     @cached_property
     def longlats(self):
@@ -28,6 +26,7 @@ class CensusCentroids:
 
 @dataclass
 class FoursquareDownload(CensusCentroids):
+    secrets: dict
     company: str = "wawa"
 
     @property
@@ -37,14 +36,12 @@ class FoursquareDownload(CensusCentroids):
             "dunkin": "2cb519f8-883c-4263-860a-cd83325fbb97",
         }
 
-    @cached_property
-    def auth(self):
-        with open("../secrets.yaml", "r") as file:
-            return yaml.load(file, Loader=yaml.FullLoader)["FOURSQUARE"]
-
     @property
     def headers(self):
-        return {"Authorization": self.auth, "accept": "application/json"}
+        return {
+            "Authorization": self.secrets["foursquare"]["api_key"],
+            "accept": "application/json",
+        }
 
     def querystring(self, longlat):
         return {
@@ -63,10 +60,12 @@ class FoursquareDownload(CensusCentroids):
         return response.json()
 
     def fp_out(self, i):
-        return f"../data/{self.company}/{i}.json"
+        directory = Path(f"../data/{self.company}/")
+        directory.mkdir(parents=True, exist_ok=True)
+        return directory / f"{i}.json"
 
     def save(self):
-        for i, x in tqdm.tqdm(enumerate(self.longlats)):
+        for i, x in tqdm.tqdm(enumerate(self.longlats[:2])):
             result = self.query(longlat=x)
             if Path(self.fp_out(i)).exists():
                 continue
