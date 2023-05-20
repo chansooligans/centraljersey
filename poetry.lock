@@ -448,6 +448,18 @@ files = [
 ]
 
 [[package]]
+name = "distro"
+version = "1.8.0"
+description = "Distro - an OS platform information API"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "distro-1.8.0-py3-none-any.whl", hash = "sha256:99522ca3e365cac527b44bde033f64c6945d90eb9f769703caaec52b09bbd3ff"},
+    {file = "distro-1.8.0.tar.gz", hash = "sha256:02e111d1dc6a50abb8eed6bf31c3e48ed8b0830d1ea2a1b78c61765c2513fdd8"},
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.1.1"
 description = "Backport of PEP 654 (exception groups)"
@@ -1669,6 +1681,28 @@ pure-eval = "*"
 tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
+name = "tabula-py"
+version = "2.7.0"
+description = "Simple wrapper for tabula-java, read tables from PDF into DataFrame"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "tabula-py-2.7.0.tar.gz", hash = "sha256:e95d8ff49fe2f86534006ae8bf38d54a9894ae70042831d70d5760800519bae8"},
+    {file = "tabula_py-2.7.0-py3-none-any.whl", hash = "sha256:7151077fedd4a6976a1a4388e36774e87d7a421a4dd0775cc3da25f2fd43ebbe"},
+]
+
+[package.dependencies]
+distro = "*"
+numpy = "*"
+pandas = ">=0.25.3"
+
+[package.extras]
+dev = ["Flake8-pyproject", "black", "flake8", "isort", "mypy", "pytest"]
+doc = ["sphinx", "sphinx-rtd-theme"]
+test = ["pytest"]
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -1799,4 +1833,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ef13a8fa9e7b9e86498a5ea0e1eae858471b36062042406c8118a010bca01b12"
+content-hash = "d2a854e03257ddfecb0d129dcfb232b23c41822fadb5c2f3f66fedf2557e3134"
