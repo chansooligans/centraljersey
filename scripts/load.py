@@ -24,7 +24,6 @@ dialects.forward
 dialects.draw
 dialects.gone
 
-
 # %%
 njdotcom = njdotload.Njdotcom()
 njdotcom.nfl
