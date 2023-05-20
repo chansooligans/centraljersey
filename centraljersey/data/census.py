@@ -133,7 +133,10 @@ class Load:
         return df
 
     def process(self, df):
-        numeric_columns = df.select_dtypes(include=["int", "float"]).columns
+        numeric_columns = [
+            x for x in df.columns if x not in ["state", "county", "tract"]
+        ]
+        df[numeric_columns] = df[numeric_columns].astype(int)
         df[numeric_columns] = df[numeric_columns].mask(df[numeric_columns] < 0, 0)
         df["tract"] = df["tract"].str.zfill(5)
         return df

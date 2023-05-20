@@ -46,8 +46,7 @@ class TestLoad(unittest.TestCase):
             {
                 "A": [1, -2, 3, -4],
                 "B": [-5, 6, -7, 8],
-                "C": [0.5, -1.2, 2.3, -3.4],
-                "D": ["apple", "banana", "cherry", "durian"],
+                "state": ["apple", "banana", "cherry", "durian"],
                 "tract": ["123", "456", "789", "012"],
             }
         )
@@ -60,8 +59,7 @@ class TestLoad(unittest.TestCase):
             {
                 "A": [1, 0, 3, 0],
                 "B": [0, 6, 0, 8],
-                "C": [0.5, 0.0, 2.3, 0.0],
-                "D": ["apple", "banana", "cherry", "durian"],
+                "state": ["apple", "banana", "cherry", "durian"],
                 "tract": ["00123", "00456", "00789", "00012"],
             }
         )
