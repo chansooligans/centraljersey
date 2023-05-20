@@ -44,7 +44,7 @@ class TestLoad(unittest.TestCase):
         # Create a sample DataFrame
         df = pd.DataFrame(
             {
-                "A": [1, -2, 3, -4],
+                "A": ["1", "-2", "3", "-4"],
                 "B": [-5, 6, -7, 8],
                 "state": ["apple", "banana", "cherry", "durian"],
                 "tract": ["123", "456", "789", "012"],
