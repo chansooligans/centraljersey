@@ -132,7 +132,20 @@ class Load:
         df.rename(columns=self.variables, inplace=True)
         return df
 
+    def process(self, df):
+        numeric_columns = df.select_dtypes(include=["int", "float"]).columns
+        df[numeric_columns] = df[numeric_columns].mask(df[numeric_columns] < 0, 0)
+        df["tract"] = df["tract"].str.zfill(5)
+        return df
+
     @cached_property
-    @cache.localcache()
-    def nj_data(self):
-        return self.get_df()
+    @cache.localcache(dtype={"tract": str, "county": str})
+    def nj_data(self) -> pd.DataFrame:
+        """
+        Cached property to retrieve New Jersey data as a DataFrame.
+
+        Returns:
+            pd.DataFrame: The New Jersey data as a DataFrame.
+        """
+        df = self.get_df()
+        return self.process(df)

@@ -2,6 +2,8 @@ import json
 import unittest
 from unittest.mock import MagicMock, PropertyMock, patch
 
+import pandas as pd
+
 from centraljersey.data import census
 
 

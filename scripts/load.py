@@ -15,7 +15,7 @@ census = censusload.Load(
     state_code="34",  # New Jersey's FIPS code
     tract_code="*",  # All census tracts
 )
-census.nj_data
+census.nj_data.columns
 
 # %%
 dialects = diaload.Load()
@@ -29,4 +29,17 @@ njdotcom = njdotload.Njdotcom()
 njdotcom.nfl
 njdotcom.pork
 
+# %%
+
+# %%
+import pandas as pd
+
+# Create a sample DataFrame
+df = pd.DataFrame({"A": [1, -2, 3, -4], "B": [-5, 6, -7, 8]})
+
+# Set negative values to 0
+df = df.mask(df < 0, 0)
+
+# %%
+df
 # %%
