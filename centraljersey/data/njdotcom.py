@@ -7,7 +7,7 @@ import pandas as pd
 class Njdotcom:
     @cached_property
     def nfl(self):
-        df = pd.read_csv("../data/nfl.csv").rename(
+        df = pd.read_csv("../data/manually_extracted/nfl.csv").rename(
             {
                 "County": "COUNTY",
                 "Giants": "nfl_giants",
@@ -22,7 +22,7 @@ class Njdotcom:
 
     @cached_property
     def pork(self):
-        df = pd.read_csv("../data/pork_ham.csv").rename(
+        df = pd.read_csv("../data/manually_extracted/pork_ham.csv").rename(
             {
                 "County": "COUNTY",
                 "Pork Roll": "pork_pork_roll",
