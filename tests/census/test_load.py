@@ -1,15 +1,15 @@
-import unittest
 import json
-from unittest.mock import MagicMock
-from unittest.mock import patch, PropertyMock
+import unittest
+from unittest.mock import MagicMock, PropertyMock, patch
+
 from centraljersey.census import load
 
 
 class TestLoad(unittest.TestCase):
     def setUp(self):
         self.load = load.Load(
-            secrets = {"census":{"api_key":"abcde"}},
-            variables = {
+            secrets={"census": {"api_key": "abcde"}},
+            variables={
                 "B02001_001E": "total_pop",
                 "B02001_002E": "white_pop",
                 "B02001_003E": "black_pop",

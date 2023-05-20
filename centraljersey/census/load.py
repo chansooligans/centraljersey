@@ -1,10 +1,12 @@
-from centraljersey.config import setup
-from functools import cached_property
-from dataclasses import dataclass, field
-import requests
-import pandas as pd
 import json
+from dataclasses import dataclass, field
+from functools import cached_property
 from typing import Dict
+
+import pandas as pd
+import requests
+
+from centraljersey.config import setup
 
 VARIABLES = {
     "B02001_001E": "total_pop",
@@ -78,6 +80,7 @@ class Load:
         get_response(): Sends an API request and returns the response.
         get_df(): Fetches data from the API and returns it as a DataFrame.
     """
+
     fp_out: str
     secrets: Dict[str, str] = field(default_factory=setup)
     variables: Dict[str, str] = field(default_factory=lambda: VARIABLES)
@@ -128,7 +131,7 @@ class Load:
         df = pd.DataFrame(data, columns=headers)
         df.rename(columns=self.variables, inplace=True)
         return df
-    
+
     def save(self):
         df = self.get_df()
         df.to_csv(f"{self.fp_out}/censustracts.csv", index=False)
