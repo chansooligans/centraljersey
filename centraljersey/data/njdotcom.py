@@ -22,6 +22,9 @@ class Njdotcom:
             axis=1,
         )
         df["COUNTY"] = df["COUNTY"].str.upper()
+        df["giants_or_jets"] = df[["nfl_giants", "nfl_jets"]].sum(axis=1) / df[
+            ["nfl_giants", "nfl_jets", "nfl_eagles"]
+        ].sum(axis=1)
         return df
 
     @cached_property
@@ -36,4 +39,7 @@ class Njdotcom:
             axis=1,
         )
         df["COUNTY"] = df["COUNTY"].str.upper()
+        df["pork_roll"] = df["pork_pork_roll"] / df[
+            ["pork_pork_roll", "pork_taylor_ham"]
+        ].sum(axis=1)
         return df
