@@ -30,16 +30,3 @@ njdotcom.nfl
 njdotcom.pork
 
 # %%
-
-# %%
-import pandas as pd
-
-# Create a sample DataFrame
-df = pd.DataFrame({"A": [1, -2, 3, -4], "B": [-5, 6, -7, 8]})
-
-# Set negative values to 0
-df = df.mask(df < 0, 0)
-
-# %%
-df
-# %%
