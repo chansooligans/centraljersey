@@ -33,7 +33,7 @@ class FoursquareDownload(CensusCentroids):
     @property
     def company_id(self):
         return {
-            "wawa": "2cb519f8-883c-4263-860a-cd83325fbb97",
+            "wawa": "7dbc6a56-2391-4a50-b479-8b469beacebc",
             "dunkin": "2cb519f8-883c-4263-860a-cd83325fbb97",
         }
 
@@ -62,16 +62,18 @@ class FoursquareDownload(CensusCentroids):
         )
         return response.json()
 
+    def fp_out(self, i):
+        return f"../data/{self.company}/{i}.json"
+
     def save(self):
         for i, x in tqdm.tqdm(enumerate(self.longlats)):
             result = self.query(longlat=x)
-            out = f"../data/{self.company}/{i}.json"
-            if Path(out).exists():
+            if Path(self.fp_out(i)).exists():
                 continue
             else:
-                with open(out, "w") as f:
+                with open(self.fp_out(i), "w") as f:
                     json.dump(result, f)
-                time.sleep(0.25)
+                time.sleep(0.05)
 
 
 @dataclass
