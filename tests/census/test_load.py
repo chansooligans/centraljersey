@@ -8,6 +8,7 @@ from centraljersey.census import load
 class TestLoad(unittest.TestCase):
     def setUp(self):
         self.load = load.Load(
+            fp_out="",
             secrets={"census": {"api_key": "abcde"}},
             variables={
                 "B02001_001E": "total_pop",
