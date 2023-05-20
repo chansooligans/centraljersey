@@ -32,7 +32,6 @@ class TestNjdotcom(unittest.TestCase):
 
     @patch("pandas.read_csv", return_value=nfl)
     def test_nfl(self, mock_read_csv):
-
         # Test if the 'nfl' property returns a DataFrame
         self.assertIsInstance(self.njdotcom.nfl, pd.DataFrame)
 
@@ -43,11 +42,17 @@ class TestNjdotcom(unittest.TestCase):
             "nfl_jets",
             "nfl_eagles",
             "nfl_other",
+            "giants_or_jets",
         ]
         self.assertListEqual(list(self.njdotcom.nfl.columns), expected_columns)
 
         # Test if the 'COUNTY' column values are uppercase
         self.assertTrue(all(self.njdotcom.nfl["COUNTY"].str.isupper()))
+
+        self.assertListEqual(
+            list(self.njdotcom.nfl["giants_or_jets"].values.round(2)),
+            [0.17, 0.84, 0.20],
+        )
 
     @patch("pandas.read_csv", return_value=pork)
     def test_pork(self, mock_read_csv):
@@ -55,12 +60,13 @@ class TestNjdotcom(unittest.TestCase):
         self.assertIsInstance(self.njdotcom.pork, pd.DataFrame)
 
         # Test if the DataFrame has the expected columns
-        expected_columns = [
-            "COUNTY",
-            "pork_pork_roll",
-            "pork_taylor_ham",
-        ]
+        expected_columns = ["COUNTY", "pork_pork_roll", "pork_taylor_ham", "pork_roll"]
         self.assertListEqual(list(self.njdotcom.pork.columns), expected_columns)
 
         # Test if the 'COUNTY' column values are uppercase
         self.assertTrue(all(self.njdotcom.pork["COUNTY"].str.isupper()))
+
+        self.assertListEqual(
+            list(self.njdotcom.pork["pork_roll"].values),
+            [1.0, 0.0, 1.0],
+        )
