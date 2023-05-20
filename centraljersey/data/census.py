@@ -10,7 +10,7 @@ from pandera import check_output
 
 from centraljersey import cache
 from centraljersey.config import setup
-from centraljersey.data.validations import census as census_validate
+from centraljersey.data.validations.census import schema
 
 VARIABLES = {
     "B02001_001E": "total_pop",
@@ -164,4 +164,4 @@ class Load:
         Returns:
             pd.DataFrame: The New Jersey data as a DataFrame.
         """
-        return census_validate.schema.validate(self.censusdata)
+        return schema.validate(self.censusdata)

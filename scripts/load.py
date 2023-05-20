@@ -15,14 +15,14 @@ census = censusload.Load(
     state_code="34",  # New Jersey's FIPS code
     tract_code="*",  # All census tracts
 )
-census.nj_data.columns
+census.nj_data
 
 # %%
 dialects = diaload.Load()
+dialects.gone
 dialects.calm
 dialects.forward
 dialects.draw
-dialects.gone
 
 # %%
 njdotcom = njdotload.Njdotcom()
