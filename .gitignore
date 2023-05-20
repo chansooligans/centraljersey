@@ -73,7 +73,8 @@ _build/*
 */oag_logo.png
 
 # data files
-data/*
+data/
+cache/
 
 # secrets
 api.yaml
