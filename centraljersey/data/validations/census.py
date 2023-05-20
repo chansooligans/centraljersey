@@ -55,23 +55,20 @@ schema = pa.DataFrameSchema(
     {
         **{
             x: pa.Column(pa.Int, checks=[pa.Check.greater_than_or_equal_to(0)])
-            for x in []
+            for x in CENSUS_COLUMNS
         },
-    },
-    **{
-        "state": pa.Column(
-            pa.String, checks=[pa.Check.isin(["34"])]  # Valid state code
-        ),
-        "county": pa.Column(
-            pa.String, checks=[pa.Check.isin(["13"])]  # Valid county code
-        ),
-        "tract": pa.Column(
-            pa.String,
-            checks=[
-                pa.Check.regex(
-                    r"^\d{5}$"
-                )  # Pattern for valid tract codes (four digits)
-            ],
-        ),
+        **{
+            "state": pa.Column(
+                pa.String, checks=[pa.Check.isin(["34"])]  # Valid state code
+            ),
+            "county": pa.Column(
+                pa.String,
+                checks=[pa.Check.str_length(3)],
+            ),
+            "tract": pa.Column(
+                pa.String,
+                checks=[pa.Check.str_length(5)],
+            ),
+        },
     }
 )
