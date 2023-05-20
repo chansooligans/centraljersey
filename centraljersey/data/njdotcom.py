@@ -2,10 +2,14 @@ from dataclasses import dataclass
 from functools import cached_property
 
 import pandas as pd
+from pandera import check_output
+
+from centraljersey.data.validations.njdotcom import schema_nfl, schema_pork
 
 
 class Njdotcom:
     @cached_property
+    @check_output(schema_nfl)
     def nfl(self):
         df = pd.read_csv("../data/manually_extracted/nfl.csv").rename(
             {
@@ -21,6 +25,7 @@ class Njdotcom:
         return df
 
     @cached_property
+    @check_output(schema_pork)
     def pork(self):
         df = pd.read_csv("../data/manually_extracted/pork_ham.csv").rename(
             {
