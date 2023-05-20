@@ -11,11 +11,11 @@ fp_out = Path.cwd().parent
 
 # %%
 census = censusload.Load(
+    fp_out = fp_out / 'data',
     endpoint = "https://api.census.gov/data/2020/acs/acs5",
     state_code = "34",  # New Jersey's FIPS code
     tract_code = "*",  # All census tracts
 )
-df_census = census.get_df()
+census.save()
 
 # %%
-df_census.to_csv(f"{fp_out}/data/censustracts.csv", index=False)
