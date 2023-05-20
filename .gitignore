@@ -74,6 +74,8 @@ _build/*
 
 # data files
 data/
+!centraljersey/data/
+!tests/data/
 cache/
 
 # secrets

@@ -7,6 +7,7 @@ if get_ipython() is not None:
 
 from centraljersey.data import census as censusload
 from centraljersey.data import dialects as diaload
+from centraljersey.data import njdotcom as njdotload
 
 # %%
 census = censusload.Load(
@@ -23,5 +24,9 @@ dialects.forward
 dialects.draw
 dialects.gone
 
+# %%
+njdotcom = njdotload.Njdotcom()
+njdotcom.nfl
+njdotcom.pork
 
 # %%
