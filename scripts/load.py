@@ -39,6 +39,7 @@ njdotcom.pork
 
 # %%
 fsq = fsload.FoursquareProcess()
-fsq.df_dunkins
+fsq.df_dunkins_county
+fsq.df_wawas
 
 # %%
