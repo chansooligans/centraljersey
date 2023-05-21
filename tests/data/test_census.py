@@ -121,3 +121,47 @@ class TestProcess:
 
         processed_df = process.process_education(df)
         pd.testing.assert_frame_equal(processed_df, expected_df)
+
+    def test_process_occupations(self, process):
+        df = pd.DataFrame(
+            {
+                "occu_Estimate!!Total:": [100, 200, 300],
+                "occu_Architecture and Engineering Occupations:": [10, 20, 30],
+                "occu_Computer and Mathematical Occupations:": [5, 10, 15],
+            }
+        )
+
+        expected_df = pd.DataFrame(
+            {
+                "occu_Estimate!!Total:": [100, 200, 300],
+                "occu_Architecture and Engineering Occupations:": [10.0, 10.0, 10.0],
+                "occu_Computer and Mathematical Occupations:": [5.0, 5.0, 5.0],
+            }
+        )
+
+        processed_df = process.process_occupations(df)
+        pd.testing.assert_frame_equal(processed_df, expected_df)
+
+    def test_process_populations(self, process):
+        df = pd.DataFrame(
+            {
+                "white_pop": [50, 100, 150],
+                "black_pop": [20, 40, 60],
+                "native_pop": [5, 10, 15],
+                "asian_pop": [15, 30, 45],
+                "total_pop": [1000, 2000, 3000],
+            }
+        )
+
+        expected_df = pd.DataFrame(
+            {
+                "white_pop": [5.0, 5.0, 5.0],
+                "black_pop": [2.0, 2.0, 2.0],
+                "native_pop": [0.5, 0.5, 0.5],
+                "asian_pop": [1.5, 1.5, 1.5],
+                "total_pop": [1000, 2000, 3000],
+            }
+        )
+
+        processed_df = process.process_populations(df)
+        pd.testing.assert_frame_equal(processed_df, expected_df)

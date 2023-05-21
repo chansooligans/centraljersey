@@ -77,9 +77,24 @@ class Process:
         df["edu_college"] = 100 * (df["edu_college"] / df["edu_total"])
         return df
 
+    def process_occupations(self, df):
+        for col in df.columns:
+            if col == "occu_Estimate!!Total:":
+                continue
+            if col[:5] == "occu_":
+                df[col] = 100 * (df[col] / df["occu_Estimate!!Total:"])
+        return df
+
+    def process_populations(self, df):
+        for col in df.columns:
+            if col in ["white_pop", "black_pop", "native_pop", "asian_pop"]:
+                df[col] = 100 * (df[col] / df["total_pop"])
+        return df
+
     def process(self, df):
         df = self.process_incomes(df)
         df = self.process_education(df)
+        df = self.process_occupations(df)
         return df
 
 
