@@ -64,8 +64,43 @@ VARIABLES = {
 }
 
 
+class Process:
+    def process_incomes(self, df):
+        df["income_150k+"] = df[["income_150k_to_$200k", "income_200k_to_more"]].sum(
+            axis=1
+        )
+        df["pob_foreign_born"] = 100 * (df["pob_foreign_born"] / df["total_pop"])
+        df["income_150k+"] = 100 * (df["income_150k+"] / df["income_total"])
+        return df
+
+    def process_education(self, df):
+        df["edu_college"] = 100 * (df["edu_college"] / df["edu_total"])
+        return df
+
+    def process_occupations(self, df):
+        for col in df.columns:
+            if col == "occu_Estimate!!Total:":
+                continue
+            if col[:5] == "occu_":
+                df[col] = 100 * (df[col] / df["occu_Estimate!!Total:"])
+        return df
+
+    def process_populations(self, df):
+        for col in df.columns:
+            if col in ["white_pop", "black_pop", "native_pop", "asian_pop"]:
+                df[col] = 100 * (df[col] / df["total_pop"])
+        return df
+
+    def process(self, df):
+        df = self.process_incomes(df)
+        df = self.process_education(df)
+        df = self.process_occupations(df)
+        df = self.process_populations(df)
+        return df
+
+
 @dataclass
-class Load:
+class Load(Process):
     """
     Represents a data loader for census data.
 
@@ -164,4 +199,4 @@ class Load:
         Returns:
             pd.DataFrame: The New Jersey data as a DataFrame.
         """
-        return schema.validate(self.censusdata)
+        return self.process(schema.validate(self.censusdata))
