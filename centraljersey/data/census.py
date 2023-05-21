@@ -95,6 +95,7 @@ class Process:
         df = self.process_incomes(df)
         df = self.process_education(df)
         df = self.process_occupations(df)
+        df = self.process_populations(df)
         return df
 
 
