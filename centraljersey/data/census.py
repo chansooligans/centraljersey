@@ -77,9 +77,14 @@ class Process:
         df["edu_college"] = 100 * (df["edu_college"] / df["edu_total"])
         return df
 
+    def process(self, df):
+        df = self.process_incomes(df)
+        df = self.process_education(df)
+        return df
+
 
 @dataclass
-class Load:
+class Load(Process):
     """
     Represents a data loader for census data.
 
@@ -178,4 +183,4 @@ class Load:
         Returns:
             pd.DataFrame: The New Jersey data as a DataFrame.
         """
-        return schema.validate(self.censusdata)
+        return self.process(schema.validate(self.censusdata))
