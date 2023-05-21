@@ -1,232 +1,82 @@
 # %%
+from IPython import get_ipython
+
 if get_ipython() is not None:
     get_ipython().run_line_magic("load_ext", "autoreload")
     get_ipython().run_line_magic("autoreload", "2")
-import numpy as np
-import pandas as pd
-import seaborn as sns
-from sklearn.decomposition import PCA
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import cross_val_predict, cross_val_score
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
-from src import merge
-from src.load import census, dialects, foursquare
 
 # %%
-merger = merge.Merge()
-df_county = merger.df_counties
-df_tracts = merger.df_tracts
+from unittest.mock import Mock
 
-# %% [markdown]
-"""
-# Export Geojson
-"""
+import geopandas as gpd
 
-# %%
-county_cols = [
-    "COUNTY",
-    "COUNTYFP",
-    "geometry",
-    "wawa_id",
-    "dunkin_id",
-    "giants_or_jets",
-    "pork_roll",
-    "calm-no-l",
-    "almond-no-l",
-    "forward-no-r",
-    "drawer",
-    "gone-don",
+from centraljersey import config
+from centraljersey.data import census, dialects, foursquare, njdotcom
+
+NORTHJERSEY = [
+    "Bergen",
+    "Essex",
+    "Hudson",
+    "Morris",
+    "Passaic",
+    "Sussex",
+    "Warren",
+    # "Union",
 ]
-df_county[county_cols].fillna(0).to_file(
-    "../apps/static/geojson/merged_counties.geojson", driver="GeoJSON"
-)
 
-# %% [markdown]
-"""
-# Predictions
-"""
+SOUTHJERSEY = [
+    "Atlantic",
+    "Burlington",
+    "Camden",
+    "Cape May",
+    "Cumberland",
+    "Gloucester",
+    "Salem",
+]
+
+
+self = Mock()
+self.census = "some value"
+self.census = census.Load().nj_data
+
+self.fsq = foursquare.FoursquareProcess()
+
+self.njdotcom = njdotcom.Njdotcom()
+
+self.dialects = dialects.Load()
+
+self.tracts = gpd.read_file("../data/tl_2018_34_tract/tl_2018_34_tract.shp")
+self.counties = gpd.read_file(
+    "../data/county_boundaries/County_Boundaries_of_NJ.shp"
+).to_crs("EPSG:4269")
 
 # %%
-df_tracts = df_tracts.merge(
-    df_county[
-        [
-            "COUNTYFP",
-            "dunkin_id",
-            "wawa_id",
-            "pork_roll",
-            "giants_or_jets",
-            "calm-no-l",
-            "almond-no-l",
-            "forward-no-r",
-            "drawer",
-            "gone-don",
-        ]
-    ],
+df = self.tracts.merge(
+    self.census,
     how="left",
+    left_on=["COUNTYFP", "TRACTCE"],
+    right_on=["county", "tract"],
+)
+df = df.loc[df["total_pop"] > 0].reset_index(drop=True)
+
+df["income_150k+"] = df[["income_150k_to_$200k", "income_200k_to_more"]].sum(axis=1)
+
+df["pob_foreign_born"] = 100 * (df["pob_foreign_born"] / df["total_pop"])
+df["income_150k+"] = 100 * (df["income_150k+"] / df["income_total"])
+df["edu_college"] = 100 * (df["edu_college"] / df["edu_total"])
+
+for col in df.columns:
+    if col == "occu_Estimate!!Total:":
+        continue
+    if col[:5] == "occu_":
+        df[col] = 100 * (df[col] / df["occu_Estimate!!Total:"])
+    if col in ["white_pop", "black_pop", "native_pop", "asian_pop"]:
+        df[col] = 100 * (df[col] / df["total_pop"])
+
+df["county_name"] = (
+    df["tract_name"].str.split(", ").str[1].str.split("County").str[0].str.strip()
 )
 
-INCLUDE = [
-    "dunkin_id",
-    "wawa_id",
-    "giants_or_jets",
-    "pork_roll",
-    "calm-no-l",
-    "almond-no-l",
-    "forward-no-r",
-    "drawer",
-    "gone-don",
-    "white_pop",
-    "black_pop",
-    "asian_pop",
-    "occu_Agricul/fish/mining/forest",
-    "occu_Construction",
-    "occu_Manufacturing",
-    "occu_Wholesale trade",
-    "occu_Retail trade",
-    "occu_transport/warehouse/utils",
-    "occu_Information",
-    "occu_finance/insurance/realestate",
-    "occu_administrative",
-    "occu_educational/healthcare/social",
-    "occu_arts/entertainment/foodservices",
-    "occu_public administration",
-    "occu_management, business",
-    "occu_Service occupations:",
-    "occu_Sales and office occupations:",
-    "occu_Natural resources, construction",
-    "occu_production/transport/materials",
-    "income_150k+",
-    "pob_foreign_born",
-    "edu_college",
-]
-
-X = df_tracts.loc[df_tracts["label"].notnull(), INCLUDE].fillna(0)
-features = X.columns
-y = df_tracts.loc[df_tracts["label"].notnull(), "label"]
-X_test = df_tracts[INCLUDE].fillna(0)
-
-# %% [markdown]
-"""
-# Prep
-"""
-
-# %%
-sc = StandardScaler()
-X = sc.fit_transform(X)
-X_test = sc.transform(X_test)
-
-# %% [markdown]
-"""
-# Logistic Regression
-"""
-# %%
-m = LogisticRegression(random_state=0)
-clf = m.fit(X, y)
-
-# Use cross_val_predict to perform cross-validation
-y_pred = cross_val_predict(clf, X, y, cv=5)
-
-# Use cross_val_score to calculate cross-validated performance scores
-scores = cross_val_score(clf, X, y, cv=5)
-print("Cross-validated scores:", scores)
-
-df_features = pd.DataFrame({"feature": features, "blue=north": m.coef_[0]})
-
-y_test = clf.predict_proba(X_test)
-
-df_features.sort_values("blue=north").to_csv(
-    "../apps/static/csv/summary.csv", index=False
-)
-df_tracts["_loc"] = y_test[:, 1]
-
-# %% [markdown]
-"""
-# SVM
-"""
-# %%
-m = SVC(probability=True)
-# clf = m.fit(X, y)
-from sklearn.model_selection import GridSearchCV
-
-param_grid = {
-    "C": [0.1, 1, 10, 100],
-    "gamma": [1, 0.1, 0.01, 0.001],
-    "kernel": ["rbf", "poly", "sigmoid"],
-}
-grid = GridSearchCV(m, param_grid, refit=True, verbose=2)
-clf = grid.fit(X, y)
-
-y_test = clf.predict_proba(X_test)
-print(clf.best_estimator_)
-
-df_tracts["svc_loc"] = y_test[:, 1]
-
-# %% [markdown]
-"""
-# KNN
-"""
-# %%
-m = KNeighborsClassifier(3)
-clf = m.fit(X, y)
-
-# Use cross_val_predict to perform cross-validation
-y_pred = cross_val_predict(clf, X, y, cv=5)
-
-# Use cross_val_score to calculate cross-validated performance scores
-scores = cross_val_score(clf, X, y, cv=5)
-print("Cross-validated scores:", scores)
-
-y_test = clf.predict_proba(X_test)
-
-df_tracts["knn_loc"] = y_test[:, 1]
-
-# %% [markdown]
-"""
-# Random Forest
-"""
-# %%
-m = RandomForestClassifier()
-param_grid = {
-    "n_estimators": [25, 50, 100, 150],
-    "max_features": ["sqrt", "log2", None],
-    "max_depth": [3, 6, 9],
-    "max_leaf_nodes": [3, 6, 9],
-}
-grid_search = GridSearchCV(m, param_grid=param_grid, verbose=2)
-clf = grid_search.fit(X, y)
-y_test = clf.predict_proba(X_test)
-
-df_tracts["rf_loc"] = y_test[:, 1]
-
-# %% [markdown]
-"""
-# AdaBoost
-"""
-# %%
-from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-
-m = AdaBoostClassifier()
-clf = m.fit(X, y)
-
-# Use cross_val_predict to perform cross-validation
-y_pred = cross_val_predict(clf, X, y, cv=5)
-
-# Use cross_val_score to calculate cross-validated performance scores
-scores = cross_val_score(clf, X, y, cv=5)
-print("Cross-validated scores:", scores)
-
-y_test = clf.predict_proba(X_test)
-
-df_tracts["ada_loc"] = y_test[:, 1]
-
-# %% [markdown]
-"""
-# Export
-"""
-# %%
-df_tracts[
-    ["geometry", "_loc", "svc_loc", "knn_loc", "rf_loc", "ada_loc"] + INCLUDE
-].fillna(0).to_file("../apps/static/geojson/merged_tracts.geojson", driver="GeoJSON")
+df["label"] = None
+df.loc[df["county_name"].isin(NORTHJERSEY), "label"] = "1"
+df.loc[df["county_name"].isin(SOUTHJERSEY), "label"] = "0"

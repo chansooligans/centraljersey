@@ -64,6 +64,20 @@ VARIABLES = {
 }
 
 
+class Process:
+    def process_incomes(self, df):
+        df["income_150k+"] = df[["income_150k_to_$200k", "income_200k_to_more"]].sum(
+            axis=1
+        )
+        df["pob_foreign_born"] = 100 * (df["pob_foreign_born"] / df["total_pop"])
+        df["income_150k+"] = 100 * (df["income_150k+"] / df["income_total"])
+        return df
+
+    def process_education(self, df):
+        df["edu_college"] = 100 * (df["edu_college"] / df["edu_total"])
+        return df
+
+
 @dataclass
 class Load:
     """
