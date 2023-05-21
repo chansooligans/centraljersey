@@ -34,7 +34,11 @@ njdotcom.nfl
 njdotcom.pork
 
 # %%
-fsdownload = fsload.FoursquareDownload(secrets=secrets, company="wawa")
+# fsdownload = fsload.FoursquareDownload(secrets=secrets, company="dunkin")
+# fsdownload.save()
 
-fsdownload.save()
+# %%
+fsq = fsload.FoursquareProcess()
+fsq.df_dunkins
+
 # %%

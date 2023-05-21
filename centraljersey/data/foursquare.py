@@ -136,44 +136,9 @@ class FoursquareDownload(CensusCentroids):
                 time.sleep(0.05)
 
 
-@dataclass
-class FoursquareProcess:
-    company: str = "wawa"
-
-    def get_df(self):
-        files = glob.glob(f"../data/{self.company}/*.json")
-        df_files = []
-        for file in files:
-            with open(file, "r") as f:
-                df_files.append(json.load(f))
-
-        df = pd.DataFrame(
-            [
-                (
-                    res["fsq_id"],
-                    res["location"]["census_block"][2:5],
-                    res["location"]["census_block"][5:11],
-                )
-                for f in df_files
-                for res in f["results"]
-            ],
-            columns=[
-                f"{self.company}_id",
-                f"{self.company}_county",
-                f"{self.company}_tract",
-            ],
-        )
-        return df.drop_duplicates(subset=f"{self.company}_id")
-
-    @cached_property
-    @cache.localcache(dtype={"dunkin_tract": str, "dunkin_county": str})
-    def df_dunkins(self):
-        return self.get_df()
-
-    @cached_property
-    @cache.localcache(dtype={"wawa_tract": str, "wawa_county": str})
-    def df_wawas(self):
-        return self.get_df()
+class FoursquareGrouped:
+    df_dunkins: pd.DataFrame
+    df_wawas: pd.DataFrame
 
     @cached_property
     def df_dunkins_tract(self):
@@ -204,3 +169,42 @@ class FoursquareProcess:
         return (
             self.df_wawas.groupby("wawa_county").agg({"wawa_id": "count"}).reset_index()
         )
+
+
+class FoursquareProcess(FoursquareGrouped):
+    def get_df(self, company):
+        files = glob.glob(f"../data/{company}/*.json")
+        df_files = []
+        for file in files:
+            with open(file, "r") as f:
+                df_files.append(json.load(f))
+
+        df = pd.DataFrame(
+            [
+                (
+                    res["fsq_id"],
+                    res["location"]["census_block"][2:5],
+                    res["location"]["census_block"][5:11],
+                    res["chains"][0]["name"],
+                )
+                for f in df_files
+                for res in f["results"]
+            ],
+            columns=[
+                f"{company}_id",
+                f"{company}_county",
+                f"{company}_tract",
+                "fsq_name",
+            ],
+        )
+        return df.drop_duplicates(subset=f"{company}_id")
+
+    @cached_property
+    @cache.localcache(dtype={"dunkin_tract": str, "dunkin_county": str})
+    def df_dunkins(self):
+        return self.get_df(company="dunkin")
+
+    @cached_property
+    @cache.localcache(dtype={"wawa_tract": str, "wawa_county": str})
+    def df_wawas(self):
+        return self.get_df(company="wawa")
