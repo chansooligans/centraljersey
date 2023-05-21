@@ -10,8 +10,13 @@ import geopandas as gpd
 import pandas as pd
 import requests
 import tqdm
+from pandera import check_output
 
 from centraljersey import cache
+from centraljersey.data.validations.foursquare import (schema_dunkins_county,
+                                                       schema_dunkins_tract,
+                                                       schema_wawas_county,
+                                                       schema_wawas_tract)
 
 
 @dataclass
@@ -141,6 +146,7 @@ class FoursquareGrouped:
     df_wawas: pd.DataFrame
 
     @cached_property
+    @check_output(schema_dunkins_tract)
     def df_dunkins_tract(self):
         return (
             self.df_dunkins.groupby(["dunkin_county", "dunkin_tract"])
@@ -149,6 +155,7 @@ class FoursquareGrouped:
         )
 
     @cached_property
+    @check_output(schema_wawas_tract)
     def df_wawa_tract(self):
         return (
             self.df_wawas.groupby(["wawa_county", "wawa_tract"])
@@ -157,6 +164,7 @@ class FoursquareGrouped:
         )
 
     @cached_property
+    @check_output(schema_dunkins_county)
     def df_dunkins_county(self):
         return (
             self.df_dunkins.groupby("dunkin_county")
@@ -165,6 +173,7 @@ class FoursquareGrouped:
         )
 
     @cached_property
+    @check_output(schema_wawas_county)
     def df_wawa_county(self):
         return (
             self.df_wawas.groupby("wawa_county").agg({"wawa_id": "count"}).reset_index()
