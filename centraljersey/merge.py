@@ -6,6 +6,7 @@ import geopandas as gpd
 import pandas as pd
 
 from centraljersey.data import census, dialects, foursquare, njdotcom
+from centraljersey.preprocess import CountyLevelProcessor
 
 NORTHJERSEY = [
     "003",  # "Bergen",
@@ -31,6 +32,7 @@ SOUTHJERSEY = [
 
 class Merge:
     def __init__(self):
+        self.preprocess = CountyLevelProcessor()
         self.census = census.Load().nj_data
 
         self.fsq = foursquare.FoursquareProcess()
@@ -69,6 +71,7 @@ class Merge:
         df = df.loc[
             df["FIPSCO"] == df["COUNTYFP"], ["COUNTY", "COUNTYFP", "geometry"]
         ].drop_duplicates()
+
         df = (
             df.merge(self.njdotcom.nfl, how="left")
             .merge(self.njdotcom.pork)
@@ -78,47 +81,11 @@ class Merge:
             .merge(self.dialects.gone)
         )
 
-        for col in self.census.columns:
-            if col not in ["tract_name", "tract", "county"]:
-                self.census[col] = self.census[col].astype(float)
-        census_county = (
-            self.census.groupby("county")
-            .agg(
-                {
-                    x: sum
-                    for x in self.census.columns
-                    if x not in ["tract_name", "tract", "county"]
-                }
-            )
-            .reset_index()
+        df = self.preprocess.process(
+            df=df,
+            census=self.census,
+            dunkin=self.fsq.df_dunkins_county,
+            wawa=self.fsq.df_wawa_county,
         )
-        df = df.merge(census_county, how="left", left_on="COUNTYFP", right_on="county")
-
-        df = df.merge(
-            self.dunkin.df_dunkins_county,
-            how="left",
-            left_on="COUNTYFP",
-            right_on="dunkin_county",
-        )
-
-        df = df.merge(
-            self.wawa.df_wawa_county,
-            how="left",
-            left_on="COUNTYFP",
-            right_on="wawa_county",
-        )
-
-        df["income_150k+"] = df[["income_150k_to_$200k", "income_200k_to_more"]].sum(
-            axis=1
-        )
-        for col in ["wawa_id", "dunkin_id"]:
-            df[col] = (df[col] / df["total_pop"]) * 100_000
-
-        df["giants_or_jets"] = df[["nfl_giants", "nfl_jets"]].sum(axis=1) / df[
-            ["nfl_giants", "nfl_jets", "nfl_eagles"]
-        ].sum(axis=1)
-        df["pork_roll"] = df["pork_pork_roll"] / df[
-            ["pork_pork_roll", "pork_taylor_ham"]
-        ].sum(axis=1)
 
         return df
