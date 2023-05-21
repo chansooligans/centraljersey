@@ -2,6 +2,8 @@ import json
 import unittest
 from unittest.mock import MagicMock, PropertyMock, patch
 
+import pandas as pd
+
 from centraljersey.data import census
 
 
@@ -37,3 +39,29 @@ class TestLoad(unittest.TestCase):
         self.assertEqual(df.columns.tolist(), ["header1", "header2"])
         self.assertEqual(df.iloc[0]["header1"], "value1")
         self.assertEqual(df.iloc[0]["header2"], "value2")
+
+    def test_process(self):
+        # Create a sample DataFrame
+        df = pd.DataFrame(
+            {
+                "A": ["1", "-2", "3", "-4"],
+                "B": [-5, 6, -7, 8],
+                "state": ["apple", "banana", "cherry", "durian"],
+                "tract": ["123", "456", "789", "012"],
+            }
+        )
+
+        # Call the process method
+        processed_df = self.load.process(df)
+
+        # Assert the expected output
+        expected_df = pd.DataFrame(
+            {
+                "A": [1, 0, 3, 0],
+                "B": [0, 6, 0, 8],
+                "state": ["apple", "banana", "cherry", "durian"],
+                "tract": ["00123", "00456", "00789", "00012"],
+            }
+        )
+
+        pd.testing.assert_frame_equal(processed_df, expected_df)

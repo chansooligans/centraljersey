@@ -4,10 +4,13 @@ from functools import cached_property
 from typing import Dict
 
 import pandas as pd
+import pandera as pa
 import requests
+from pandera import check_output
 
 from centraljersey import cache
 from centraljersey.config import setup
+from centraljersey.data.validations.census import schema
 
 VARIABLES = {
     "B02001_001E": "total_pop",
@@ -132,7 +135,33 @@ class Load:
         df.rename(columns=self.variables, inplace=True)
         return df
 
+    def process(self, df):
+        numeric_columns = [
+            x for x in df.columns if x not in ["state", "county", "tract"]
+        ]
+        df[numeric_columns] = df[numeric_columns].astype(int)
+        df[numeric_columns] = df[numeric_columns].mask(df[numeric_columns] < 0, 0)
+        df["tract"] = df["tract"].str.zfill(5)
+        return df
+
+    @property
+    @cache.localcache(dtype={"tract": str, "county": str, "state": str})
+    def censusdata(self) -> pd.DataFrame:
+        """
+        Cached property to retrieve New Jersey data as a DataFrame.
+
+        Returns:
+            pd.DataFrame: The New Jersey data as a DataFrame.
+        """
+        df = self.get_df()
+        return self.process(df)
+
     @cached_property
-    @cache.localcache()
     def nj_data(self):
-        return self.get_df()
+        """
+        Cached property to retrieve validated dataFrame from cache.
+
+        Returns:
+            pd.DataFrame: The New Jersey data as a DataFrame.
+        """
+        return schema.validate(self.censusdata)

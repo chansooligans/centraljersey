@@ -2,8 +2,12 @@ from dataclasses import dataclass
 from functools import cached_property
 
 import tabula
+from pandera import check_output
 
 from centraljersey import cache
+from centraljersey.data.validations.dialects import (schema_calm, schema_draw,
+                                                     schema_forward,
+                                                     schema_gone)
 
 COUNTIES = [
     "Passaic",
@@ -46,6 +50,7 @@ class Load:
 
     @cached_property
     @cache.localcache()
+    @check_output(schema_calm)
     def calm(self):
         df = tabula.read_pdf(
             self.pdf_path,
@@ -71,6 +76,7 @@ class Load:
 
     @cached_property
     @cache.localcache()
+    @check_output(schema_draw)
     def draw(self):
         df = tabula.read_pdf(
             self.pdf_path,
@@ -85,6 +91,7 @@ class Load:
 
     @cached_property
     @cache.localcache()
+    @check_output(schema_forward)
     def forward(self):
         df = tabula.read_pdf(
             self.pdf_path,
@@ -101,6 +108,7 @@ class Load:
 
     @cached_property
     @cache.localcache()
+    @check_output(schema_gone)
     def gone(self):
         df = tabula.read_pdf(
             self.pdf_path, pages="19", area=[162, 254, 450, 420], columns=[349, 390]

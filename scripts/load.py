@@ -23,10 +23,10 @@ census.nj_data
 
 # %%
 dialects = diaload.Load()
+dialects.gone
 dialects.calm
 dialects.forward
 dialects.draw
-dialects.gone
 
 # %%
 njdotcom = njdotload.Njdotcom()
