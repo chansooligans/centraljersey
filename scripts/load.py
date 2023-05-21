@@ -5,9 +5,13 @@ if get_ipython() is not None:
     get_ipython().run_line_magic("load_ext", "autoreload")
     get_ipython().run_line_magic("autoreload", "2")
 
+from centraljersey import config
 from centraljersey.data import census as censusload
 from centraljersey.data import dialects as diaload
+from centraljersey.data import foursquare as fsload
 from centraljersey.data import njdotcom as njdotload
+
+secrets = config.setup()
 
 # %%
 census = censusload.Load(
@@ -28,5 +32,14 @@ dialects.draw
 njdotcom = njdotload.Njdotcom()
 njdotcom.nfl
 njdotcom.pork
+
+# %%
+# fsdownload = fsload.FoursquareDownload(secrets=secrets, company="dunkin")
+# fsdownload.save()
+
+# %%
+fsq = fsload.FoursquareProcess()
+fsq.df_dunkins_county
+fsq.df_wawas
 
 # %%
