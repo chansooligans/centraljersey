@@ -47,7 +47,13 @@ class TestLoad:
         )
         pd.testing.assert_frame_equal(df, expected_df)
 
-    def test_process(self, load):
+
+class TestProcess:
+    @pytest.fixture
+    def process(self):
+        return census.Process()
+
+    def test_process_numeric(self, process):
         # Create a sample DataFrame
         df = pd.DataFrame(
             {
@@ -59,7 +65,7 @@ class TestLoad:
         )
 
         # Call the process method
-        processed_df = load.process(df)
+        processed_df = process.process_numeric(df)
 
         # Assert the expected output
         expected_df = pd.DataFrame(
@@ -72,12 +78,6 @@ class TestLoad:
         )
 
         pd.testing.assert_frame_equal(processed_df, expected_df)
-
-
-class TestProcess:
-    @pytest.fixture
-    def process(self):
-        return census.Process()
 
     def test_process_incomes(self, process):
         df = pd.DataFrame(

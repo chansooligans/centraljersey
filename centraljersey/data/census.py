@@ -22,12 +22,14 @@ VARIABLES = {
     "B05002_003E": "pob_native_jeresy",
     "B05002_002E": "pob_native",
     "B05002_013E": "pob_foreign_born",
+    "B06009_001E": "edu_total",
     "B06009_002E": "edu_less_than_hs",
     "B06009_003E": "edu_hs_degree",
     "B06009_004E": "edu_some_college",
     "B06009_005E": "edu_college",
     "B06009_006E": "edu_grad_degree",
     "C16001_002E": "lang_only_english",
+    "B19001_001E": "income_total",
     "B19001_002E": "income_less_10k",
     "B19001_003E": "income_10k_to_$15k",
     "B19001_004E": "income_15k_to_$25k",
@@ -38,29 +40,24 @@ VARIABLES = {
     "B19001_009E": "income_100k_to_$150k",
     "B19001_010E": "income_150k_to_$200k",
     "B19001_011E": "income_200k_to_more",
-    "B24041_005E": "occu_Construction",
-    "B24041_006E": "occu_Manufacturing",
-    "B24041_007E": "occu_Wholesale trade",
-    "B24041_008E": "occu_Retail trade",
-    "B24041_009E": "occu_Transportation and warehousing, and utilities",
-    "B24041_003E": "occu_Agriculture, forestry, fishing and hunting",
-    "B24041_004E": "occu_Mining, quarrying, and oil and gas extraction",
-    "B24041_017E": "occu_Professional, scientific, and technical services",
-    "B24041_018E": "occu_Management of companies and enterprises",
-    "B24041_019E": "occu_Administrative and support and waste management services",
-    "B24041_010E": "occu_Transportation and warehousing",
-    "B24041_011E": "occu_Utilities",
-    "B24041_012E": "occu_Information",
-    "B24041_014E": "occu_Finance and insurance",
-    "B24041_015E": "occu_Real estate and rental and leasing",
-    "B24041_016E": "occu_Professional, scientific, and management, and administrative, and waste management services",
-    "B24041_020E": "occu_health care and social assistance",
-    "B24041_021E": "occu_Educational services",
-    "B24041_022E": "occu_Health care and social assistance",
-    "B24041_024E": "occu_Arts, entertainment, and recreation",
-    "B24041_025E": "occu_Accommodation and food services",
-    "B24041_026E": "occu_Other services, except public administration",
-    "B24041_027E": "occu_public_administration",
+    "C24050_001E": "occu_Estimate!!Total:",
+    "C24050_002E": "occu_Agricul/fish/mining/forest",
+    "C24050_003E": "occu_Construction",
+    "C24050_004E": "occu_Manufacturing",
+    "C24050_005E": "occu_Wholesale trade",
+    "C24050_006E": "occu_Retail trade",
+    "C24050_007E": "occu_transport/warehouse/utils",
+    "C24050_008E": "occu_Information",
+    "C24050_009E": "occu_finance/insurance/realestate",
+    "C24050_010E": "occu_administrative",
+    "C24050_011E": "occu_educational/healthcare/social",
+    "C24050_012E": "occu_arts/entertainment/foodservices",
+    "C24050_014E": "occu_public administration",
+    "C24050_015E": "occu_management, business",
+    "C24050_029E": "occu_Service occupations:",
+    "C24050_043E": "occu_Sales and office occupations:",
+    "C24050_057E": "occu_Natural resources, construction",
+    "C24050_071E": "occu_production/transport/materials",
 }
 
 
@@ -91,7 +88,17 @@ class Process:
                 df[col] = 100 * (df[col] / df["total_pop"])
         return df
 
+    def process_numeric(self, df):
+        numeric_columns = [
+            x for x in df.columns if x not in ["state", "county", "tract"]
+        ]
+        df[numeric_columns] = df[numeric_columns].astype(int)
+        df[numeric_columns] = df[numeric_columns].mask(df[numeric_columns] < 0, 0)
+        df["tract"] = df["tract"].str.zfill(5)
+        return df
+
     def process(self, df):
+        df = self.process_numeric(df)
         df = self.process_incomes(df)
         df = self.process_education(df)
         df = self.process_occupations(df)
@@ -170,15 +177,6 @@ class Load(Process):
         df.rename(columns=self.variables, inplace=True)
         return df
 
-    def process(self, df):
-        numeric_columns = [
-            x for x in df.columns if x not in ["state", "county", "tract"]
-        ]
-        df[numeric_columns] = df[numeric_columns].astype(int)
-        df[numeric_columns] = df[numeric_columns].mask(df[numeric_columns] < 0, 0)
-        df["tract"] = df["tract"].str.zfill(5)
-        return df
-
     @property
     @cache.localcache(dtype={"tract": str, "county": str, "state": str})
     def censusdata(self) -> pd.DataFrame:
@@ -188,8 +186,7 @@ class Load(Process):
         Returns:
             pd.DataFrame: The New Jersey data as a DataFrame.
         """
-        df = self.get_df()
-        return self.process(df)
+        return self.get_df()
 
     @cached_property
     def nj_data(self):

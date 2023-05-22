@@ -81,3 +81,5 @@ cache/
 # secrets
 api.yaml
 secrets.yml
+
+logs/
