@@ -1,3 +1,60 @@
+TRACTS_INCLUDE = [
+    "dunkin_id",
+    "wawa_id",
+    "giants_or_jets",
+    "pork_roll",
+    "calm-no-l",
+    "almond-no-l",
+    "forward-no-r",
+    "drawer",
+    "gone-don",
+    "white_pop",
+    "black_pop",
+    "asian_pop",
+    "occu_Agricul/fish/mining/forest",
+    "occu_Construction",
+    "occu_Manufacturing",
+    "occu_Wholesale trade",
+    "occu_Retail trade",
+    "occu_transport/warehouse/utils",
+    "occu_Information",
+    "occu_finance/insurance/realestate",
+    "occu_administrative",
+    "occu_educational/healthcare/social",
+    "occu_arts/entertainment/foodservices",
+    "occu_public administration",
+    "occu_management, business",
+    "occu_Service occupations:",
+    "occu_Sales and office occupations:",
+    "occu_Natural resources, construction",
+    "occu_production/transport/materials",
+    "income_150k+",
+    "pob_foreign_born",
+    "edu_college",
+]
+
+
+class TractLevelProcessor:
+    def append_county(self, df, county):
+        return df.merge(
+            county[
+                [
+                    "COUNTYFP",
+                    "dunkin_id",
+                    "wawa_id",
+                    "pork_roll",
+                    "giants_or_jets",
+                    "calm-no-l",
+                    "almond-no-l",
+                    "forward-no-r",
+                    "drawer",
+                    "gone-don",
+                ]
+            ],
+            how="left",
+        )
+
+
 class CountyLevelProcessor:
     def get_census_county(self, census):
         return (

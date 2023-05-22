@@ -5,8 +5,8 @@ from functools import cached_property
 import geopandas as gpd
 import pandas as pd
 
+from centraljersey import preprocess
 from centraljersey.data import census, dialects, foursquare, njdotcom
-from centraljersey.preprocess import CountyLevelProcessor
 
 NORTHJERSEY = [
     "003",  # "Bergen",
@@ -32,7 +32,8 @@ SOUTHJERSEY = [
 
 class Merge:
     def __init__(self):
-        self.preprocess = CountyLevelProcessor()
+        self.preprocess_tract = preprocess.TractLevelProcessor()
+        self.preprocess_cnty = preprocess.CountyLevelProcessor()
         self.census = census.Load().nj_data
 
         self.fsq = foursquare.FoursquareProcess()
@@ -61,7 +62,9 @@ class Merge:
         df.loc[df["COUNTYFP"].isin(NORTHJERSEY), "label"] = "1"
         df.loc[df["COUNTYFP"].isin(SOUTHJERSEY), "label"] = "0"
 
-        return df
+        df = self.preprocess_tract.append_county(df, self.df_counties)
+
+        return df.loc[:, preprocess.TRACTS_INCLUDE + ["label"]].reset_index()
 
     @cached_property
     def df_counties(self):
@@ -81,7 +84,7 @@ class Merge:
             .merge(self.dialects.gone)
         )
 
-        df = self.preprocess.process(
+        df = self.preprocess_cnty.process(
             df=df,
             census=self.census,
             dunkin=self.fsq.df_dunkins_county,
