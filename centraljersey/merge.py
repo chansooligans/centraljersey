@@ -64,7 +64,9 @@ class Merge:
 
         df = self.preprocess_tract.append_county(df, self.df_counties)
 
-        return df.loc[:, preprocess.TRACTS_INCLUDE + ["label"]].reset_index()
+        return df.loc[
+            :, preprocess.MODEL_COLS + preprocess.TOTAL_COLS + ["label"]
+        ].reset_index()
 
     @cached_property
     def df_counties(self):

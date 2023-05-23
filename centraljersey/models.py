@@ -8,7 +8,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 
-from centraljersey import merge
+from centraljersey import merge, preprocess
 
 
 class PredictionModels:
@@ -27,7 +27,9 @@ class PredictionModels:
 
     @cached_property
     def X(self):
-        return self.df_tracts.loc[self.df_tracts["label"].notnull()].fillna(0)
+        return self.df_tracts.loc[
+            self.df_tracts["label"].notnull(), preprocess.MODEL_COLS
+        ].fillna(0)
 
     @cached_property
     def features(self):

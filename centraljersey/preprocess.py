@@ -1,4 +1,4 @@
-TRACTS_INCLUDE = [
+MODEL_COLS = [
     "dunkin_id",
     "wawa_id",
     "giants_or_jets",
@@ -32,6 +32,8 @@ TRACTS_INCLUDE = [
     "pob_foreign_born",
     "edu_college",
 ]
+
+TOTAL_COLS = ["occu_Estimate!!Total:", "income_total", "total_pop", "pob_total"]
 
 
 class TractLevelProcessor:
