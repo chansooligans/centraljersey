@@ -64,7 +64,11 @@ class Merge:
 
         df = self.preprocess_tract.append_county(df, self.df_counties)
 
-        return df.loc[:, preprocess.TRACTS_INCLUDE + ["label"]].reset_index()
+        df = df.loc[
+            df["occu_administrative"].notnull(), preprocess.TRACTS_INCLUDE + ["label"]
+        ].reset_index()
+
+        return df.fillna(0)
 
     @cached_property
     def df_counties(self):
