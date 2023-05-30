@@ -88,12 +88,14 @@ class CountyLevelProcessor:
         )
 
     def merge_wawa(self, df, wawa):
-        return df.merge(
+        df = df.merge(
             wawa,
             how="left",
             left_on="COUNTYFP",
             right_on="wawa_county",
         )
+        df["wawa_id"] = df["wawa_id"].fillna(0)
+        return df
 
     def income_cols(self, df):
         df["income_150k+"] = df[["income_150k_to_$200k", "income_200k_to_more"]].sum(
@@ -102,17 +104,26 @@ class CountyLevelProcessor:
         return df
 
     def fsq_cols(self, df):
+        """
+        convert to wawas / dunkins per 100k people
+        """
         for col in ["wawa_id", "dunkin_id"]:
             df[col] = (df[col] / df["total_pop"]) * 100_000
         return df
 
     def nfl_cols(self, df):
+        """
+        percent Giants / Jets fans
+        """
         df["giants_or_jets"] = df[["nfl_giants", "nfl_jets"]].sum(axis=1) / df[
             ["nfl_giants", "nfl_jets", "nfl_eagles"]
         ].sum(axis=1)
         return df
 
     def pork_cols(self, df):
+        """
+        percent pork roll compared to taylor ham
+        """
         df["pork_roll"] = df["pork_pork_roll"] / df[
             ["pork_pork_roll", "pork_taylor_ham"]
         ].sum(axis=1)

@@ -41,7 +41,7 @@ class PredictionModels:
 
     @cached_property
     def X_test(self):
-        return self.df_tracts.fillna(0)
+        return self.df_tracts.loc[:, preprocess.MODEL_COLS].fillna(0)
 
     def preprocess_data(self):
         self.X = self.sc.fit_transform(self.X)
