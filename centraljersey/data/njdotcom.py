@@ -11,7 +11,9 @@ class Njdotcom:
     @cached_property
     @check_output(schema_nfl)
     def nfl(self):
-        df = pd.read_csv("../data/manually_extracted/nfl.csv").rename(
+        df = pd.read_csv(
+            "/home/chansoo/projects/centraljersey/data/manually_extracted/nfl.csv"
+        ).rename(
             {
                 "County": "COUNTY",
                 "Giants": "nfl_giants",
@@ -30,7 +32,9 @@ class Njdotcom:
     @cached_property
     @check_output(schema_pork)
     def pork(self):
-        df = pd.read_csv("../data/manually_extracted/pork_ham.csv").rename(
+        df = pd.read_csv(
+            "/home/chansoo/projects/centraljersey/data/manually_extracted/pork_ham.csv"
+        ).rename(
             {
                 "County": "COUNTY",
                 "Pork Roll": "pork_pork_roll",

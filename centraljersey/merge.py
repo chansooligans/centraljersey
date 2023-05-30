@@ -42,9 +42,11 @@ class Merge:
 
         self.dialects = dialects.Load()
 
-        self.tracts = gpd.read_file("../data/tl_2018_34_tract/tl_2018_34_tract.shp")
+        self.tracts = gpd.read_file(
+            "/home/chansoo/projects/centraljersey/data/tl_2018_34_tract/tl_2018_34_tract.shp"
+        )
         self.counties = gpd.read_file(
-            "../data/county_boundaries/County_Boundaries_of_NJ.shp"
+            "/home/chansoo/projects/centraljersey/data/county_boundaries/County_Boundaries_of_NJ.shp"
         ).to_crs("EPSG:4269")
 
     @cached_property
@@ -67,7 +69,7 @@ class Merge:
         df = df.loc[
             df["occu_administrative"].notnull(),
             preprocess.MODEL_COLS + ["label", "geometry"],
-        ].reset_index()
+        ].reset_index(drop=True)
 
         return df
 
