@@ -27,6 +27,10 @@ See page: https://apps.chansoos.com/centraljersey
 5. NY Giants/Jets vs Philadelphia Eagles (NJ.com surveys)
     - [load module](./centraljersey/data/njdotcom.py)
 
+## Data Dictionary
+
+- [data_dictionary.md](./exploratory/data_dictionary.md)
+
 ## Exploratory Notebooks
 
 1. Density, Correlations, PCA
