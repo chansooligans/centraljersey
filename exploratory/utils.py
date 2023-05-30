@@ -1,5 +1,6 @@
 import math
 
+import folium
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -41,3 +42,25 @@ def plot_density_by_label_grid(data, variables):
 
     # Display the plot
     plt.show()
+
+
+def show_map_county(df: pd.DataFrame, col: str):
+    figure = folium.Figure()
+    m = folium.Map(
+        location=[40.133851, -74.871826], zoom_start=8, tiles="cartodbpositron"
+    )
+    m.add_to(figure)
+
+    m.choropleth(
+        geo_data=df,
+        name="Choropleth",
+        data=df,
+        columns=["COUNTY", col],
+        key_on="feature.properties.COUNTY",
+        fill_color="YlGnBu",
+        fill_opacity=1,
+        line_opacity=0.2,
+        legend_name=col,
+        smooth_factor=0,
+    )
+    return m

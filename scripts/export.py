@@ -17,11 +17,13 @@ from sklearn.svm import SVC
 
 from centraljersey import merge, preprocess
 from centraljersey.data import census, dialects, foursquare
+from centraljersey.models import PredictionModels
 
 # %%
 merger = merge.Merge()
 df_county = merger.df_counties
 df_tracts = merger.df_tracts
+
 
 # %% [markdown]
 """
@@ -44,8 +46,35 @@ county_cols = [
     "gone-don",
 ]
 df_county[county_cols].fillna(0).to_file(
-    "../apps/static/geojson/merged_counties.geojson", driver="GeoJSON"
+    # "../apps/static/geojson/merged_counties.geojson", driver="GeoJSON"
+    "../data/static/geojson/merged_counties.geojson",
+    driver="GeoJSON",
 )
+
+# %% [markdown]
+"""
+# Export Features as GeoJSON
+"""
+
+# %%
+df_tracts[["geometry"] + preprocess.MODEL_COLS].fillna(0).to_file(
+    # "../apps/static/geojson/merged_tracts_no_model.geojson", driver="GeoJSON"
+    "../data/static/geojson/merged_tracts_no_model.geojson",
+    driver="GeoJSON",
+)
+
+
+# %% [markdown]
+"""
+# Export Model Predictions
+"""
+
+# %%
+# Example usage:
+predictions = PredictionModels()
+predictions.X
+predictions.run_predictions()
+
 
 # %% [markdown]
 """
