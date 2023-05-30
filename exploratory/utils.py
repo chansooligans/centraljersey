@@ -1,3 +1,4 @@
+import io
 import math
 
 import folium
@@ -5,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from PIL import Image
 
 
 def plot_density_by_label_grid(data, variables):
@@ -63,4 +65,7 @@ def show_map_county(df: pd.DataFrame, col: str):
         legend_name=col,
         smooth_factor=0,
     )
-    return m
+
+    img_data = m._to_png(5)
+    img = Image.open(io.BytesIO(img_data))
+    img.save(f"images/{col}.png")
