@@ -34,6 +34,6 @@ See page: https://apps.chansoos.com/centraljersey
 ## Exploratory Notebooks
 
 1. Density, Correlations, PCA
-    - [tracts_data.ipynb](./exploratory/tracts_data.ipynb)
+    - [densities_correlations_pca.ipynb](./exploratory/densities_correlations_pca.ipynb)
 2. Maps
     - [maps.ipynb](./exploratory/maps.ipynb)
