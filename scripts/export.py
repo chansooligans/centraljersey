@@ -54,5 +54,5 @@ df_county[county_cols].fillna(0).to_file(
 # %%
 df_tracts[
     ["geometry", "_loc", "svc_loc", "knn_loc", "rf_loc", "ada_loc"]
-    + preprocess.TRACTS_INCLUDE
+    + preprocess.MODEL_COLS
 ].fillna(0).to_file("../apps/static/geojson/merged_tracts.geojson", driver="GeoJSON")
