@@ -39,3 +39,5 @@ See page: https://apps.chansoos.com/centraljersey
     - [maps.ipynb](./exploratory/maps.ipynb)
 3. Logistic Regression Model Building
     - [regression.ipynb](./exploratory/models/regression.ipynb)
+4. Trees
+    - [trees.ipynb](./exploratory/models/trees.ipynb)
