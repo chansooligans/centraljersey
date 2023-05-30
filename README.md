@@ -37,3 +37,5 @@ See page: https://apps.chansoos.com/centraljersey
     - [densities_correlations_pca.ipynb](./exploratory/densities_correlations_pca.ipynb)
 2. Maps
     - [maps.ipynb](./exploratory/maps.ipynb)
+3. Logistic Regression Model Building
+    - [regression.ipynb](./exploratory/models/regression.ipynb)
